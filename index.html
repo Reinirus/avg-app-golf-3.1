@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AVG Toestemming Foto & Video – Golfclub Doetinchem</title>
+<script>
+const CFG = {
+  club: "Golfclub Doetinchem",
+  privacyEmail: "privacy@golfclubdoetinchem.nl",
+  siteUrl: "https://www.golfclubdoetinchem.nl",
+  instagramUrl: "https://www.instagram.com/golfclubdoetinchem",
+  bewaartermijn: "2 jaar na de laatste relevante activiteit",
+  verklaringVersie: "v2.2-april-2026",
+
+  // logoUrl mag ook een base64-data-url zijn.
+  logoUrl: "",
+
+  kleur: {
+    groen:  "#1b3e28",
+    groen2: "#245736",
+    goud:   "#c8a84b",
+    licht:  "#f3f7f2",
+    wit:    "#ffffff",
+    tekst:  "#1a2e1e",
+    subtiel:"#5a7558",
+    gevaar: "#b92d2d",
+    succes: "#2a7a3b",
+    info:   "#1a4f8b"
+  },
+
+  opslag: {
+    // "local" = test/demo in browser
+    // "api"   = echte werking via Apps Script backend
+    modus: "local",
+    apiUrl: ""
+  },
+
+  admin: {
+    email: "beheer@golfclubdoetinchem.nl",
+    initialPassword: "admin123",
+    resetCode: "GCD-RESET-2026"
+  }
+};
+</script>
+<style>
+:root{
+  --groen:#1b3e28;
+  --groen2:#245736;
+  --goud:#c8a84b;
+  --licht:#f3f7f2;
+  --wit:#ffffff;
+  --tekst:#1a2e1e;
+  --subtiel:#5a7558;
+  --gevaar:#b92d2d;
+  --succes:#2a7a3b;
+  --info:#1a4f8b;
+  --schaduw:0 8px 24px rgba(27,62,40,.12);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef3ee;color:var(--tekst);line-height:1.55}
+a{color:var(--groen)}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit}
+.hidden{display:none !important}
+.small{font-size:.86rem;color:var(--subtiel)}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header.top{
+  background:linear-gradient(135deg,var(--groen),var(--groen2));
+  color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 4px 16px rgba(0,0,0,.18)
+}
+.top-in{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:14px}
+.logo{width:58px;height:58px;border-radius:12px;object-fit:cover;border:2px solid var(--goud);background:#fff}
+.tit h1{margin:0;font-size:1.08rem}
+.tit p{margin:2px 0 0;color:#d7ebda;font-size:.85rem}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.nav button{
+  background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12);
+  padding:9px 12px;border-radius:10px;cursor:pointer
+}
+.nav button.active,.nav button:hover{background:var(--goud);color:var(--groen);border-color:var(--goud);font-weight:700}
+.view{display:none}
+.view.active{display:block}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start;margin-top:14px}
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--schaduw);padding:18px;border-left:5px solid var(--goud);margin-bottom:14px}
+.card.green{border-left-color:var(--groen)}
+.card.info{border-left-color:var(--info);background:#f1f7fe}
+.card.warn{border-left-color:var(--goud);background:#fff8e8}
+.card.bad{border-left-color:var(--gevaar);background:#fdeeee}
+.card h2,.card h3{margin-top:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+label{display:block;font-weight:700;margin:0 0 6px;font-size:.9rem}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #c9d6ca;border-radius:10px;background:#fff;color:var(--tekst)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--goud);box-shadow:0 0 0 3px rgba(200,168,75,.18)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  border:none;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700;min-height:44px
+}
+.btn.primary{background:var(--groen);color:#fff}
+.btn.primary:hover{background:var(--groen2)}
+.btn.gold{background:var(--goud);color:var(--groen)}
+.btn.light{background:var(--licht);color:var(--groen);border:1px solid #cdd9cf}
+.btn.danger{background:var(--gevaar);color:#fff}
+.notice{padding:12px 14px;border-radius:10px;margin:10px 0;font-size:.92rem}
+.notice.ok{background:#e9f7ee;color:#155b2b;border-left:4px solid var(--succes)}
+.notice.err{background:#fdecec;color:#7a1616;border-left:4px solid var(--gevaar)}
+.notice.inf{background:#edf5ff;color:#18477d;border-left:4px solid var(--info)}
+.notice.wrn{background:#fff8e8;color:#6f5200;border-left:4px solid var(--goud)}
+.mode-pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:.82rem;font-weight:700}
+.mode-pill.local{background:#fff3d7;color:#6f5200}
+.mode-pill.api{background:#e8f7ee;color:#155b2b}
+.choice{border:1px solid #dbe5dc;border-radius:12px;padding:12px;margin:0 0 12px;background:#fff}
+.choice h3{font-size:.98rem;margin-bottom:10px}
+.choice-row{display:flex;gap:10px;flex-wrap:wrap}
+.choice-item{flex:1;min-width:120px}
+.choice-item input{display:none}
+.choice-item label{
+  margin:0;padding:11px 10px;border:2px solid #dbe5dc;border-radius:10px;text-align:center;cursor:pointer;font-weight:700
+}
+.choice-item input[value="ja"]:checked + label{background:#e9f7ee;border-color:var(--succes);color:#155b2b}
+.choice-item input[value="nee"]:checked + label{background:#fdecec;border-color:var(--gevaar);color:#7a1616}
+.table-wrap{overflow:auto;border:1px solid #dbe5dc;border-radius:12px;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:1080px}
+th,td{padding:10px 11px;border-bottom:1px solid #ebefeb;text-align:left;font-size:.9rem;vertical-align:top}
+th{background:var(--groen);color:#fff;position:sticky;top:0}
+tr:hover td{background:#f7faf7}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.78rem;font-weight:700}
+.badge.ja,.badge.actief{background:#e9f7ee;color:#155b2b}
+.badge.nee,.badge.ingetrokken{background:#fdecec;color:#7a1616}
+.badge.aangepast{background:#fff8e8;color:#6f5200}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.toolbar .grow{flex:1}
+.kv{display:grid;grid-template-columns:210px 1fr;gap:8px 16px;font-size:.92rem}
+.kv div:nth-child(odd){font-weight:700;color:var(--subtiel)}
+.audit{display:grid;gap:8px}
+.audit-item{padding:10px 12px;border:1px solid #dde6de;border-radius:10px;background:#fafcfb}
+footer{padding:24px 16px;color:var(--subtiel);text-align:center}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.22);max-width:460px;width:100%;padding:20px}
+@media (max-width:900px){.hero,.grid2,.grid3{grid-template-columns:1fr}}
+@media print{header.top,.btnrow,.toolbar,.nav{display:none !important}.view{display:block !important}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <img id="logoTop" class="logo" alt="Logo" />
+    <div class="tit" style="flex:1">
+      <h1 id="clubName">Golfclub Doetinchem</h1>
+      <p>AVG-toestemming voor foto- en videogebruik</p>
+      <div class="nav">
+        <button data-view="start" class="active">Start</button>
+        <button data-view="uitleg">Uitleg</button>
+        <button data-view="formulier">Toestemming</button>
+        <button data-view="aanpassen">Aanpassen</button>
+        <button data-view="privacy">Privacy</button>
+        <button data-view="beheer">Beheer</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="view-start" class="view active">
+    <div class="hero">
+      <div>
+        <div class="card green">
+          <h2>Toestemming foto en video</h2>
+          <p><strong id="clubName2">Golfclub Doetinchem</strong> maakt soms foto’s en video’s tijdens activiteiten. Omdat u herkenbaar in beeld kunt komen, vragen wij vooraf uw keuze.</p>
+          <div class="notice inf">
+            Uw keuze is vrijwillig. Niet akkoord heeft geen nadeel. U kunt later altijd wijzigen of intrekken.
+          </div>
+          <div class="btnrow">
+            <button class="btn primary" data-go="formulier">Keuze invullen</button>
+            <button class="btn light" data-go="uitleg">Eerst de uitleg lezen</button>
+          </div>
+        </div>
+        <div class="card info">
+          <h3>Werkmodus</h3>
+          <p>
+            <span id="modePill" class="mode-pill local">Lokale testmodus</span>
+          </p>
+          <p id="modeText" class="small"></p>
+        </div>
+      </div>
+      <div class="card">
+        <img id="logoHero" class="logo" alt="Logo" style="width:96px;height:96px;margin-bottom:10px" />
+        <h3>Belangrijk</h3>
+        <p>Deze versie heeft nu:</p>
+        <ul>
+          <li>beheerderskant met inloggen</li>
+          <li>wachtwoord wijzigen</li>
+          <li>wachtwoord vergeten-flow</li>
+          <li>inzage in alle registraties</li>
+          <li>historie per wijziging</li>
+          <li>export naar Excel-bestand</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-uitleg" class="view">
+    <div class="card">
+      <h2>Waarom vragen wij toestemming?</h2>
+      <p>Herkenbare foto’s en video’s zijn persoonsgegevens. Daarom vragen wij vooraf toestemming voor elk doel apart.</p>
+    </div>
+    <div class="card green">
+      <h3>Uw rechten</h3>
+      <ul>
+        <li>Toestemming is vrijwillig</li>
+        <li>U kiest per doel apart</li>
+        <li>Intrekken kan later altijd</li>
+        <li>Na intrekking stopt toekomstig gebruik zo snel mogelijk</li>
+      </ul>
+    </div>
+    <div class="card info">
+      <h3>Wat gebeurt er na uw keuze?</h3>
+      <p>Uw aanvraag wordt opgeslagen. In echte werkmodus ontvangt u ook een bevestigingsmail. In testmodus ziet u alleen de melding in de app.</p>
+    </div>
+  </section>
+
+  <section id="view-formulier" class="view">
+    <div class="card">
+      <h2>Mijn toestemming invullen</h2>
+      <div id="formMsg" class="notice hidden"></div>
+      <form id="consentForm" novalidate>
+        <div class="grid2">
+          <div>
+            <label for="voornaam">Voornaam *</label>
+            <input id="voornaam" required />
+          </div>
+          <div>
+            <label for="achternaam">Achternaam *</label>
+            <input id="achternaam" required />
+          </div>
+          <div>
+            <label for="email">E-mailadres *</label>
+            <input id="email" type="email" required />
+          </div>
+          <div>
+            <label for="typeBetrokkene">Type betrokkene *</label>
+            <select id="typeBetrokkene" required>
+              <option value="">Kies</option>
+              <option>Gast</option>
+              <option>Lid</option>
+              <option>Vrijwilliger</option>
+              <option>Bezoeker</option>
+            </select>
+          </div>
+          <div>
+            <label for="datum">Datum *</label>
+            <input id="datum" type="date" required />
+          </div>
+          <div>
+            <label for="is16">16 jaar of ouder? *</label>
+            <select id="is16" required>
+              <option value="">Kies</option>
+              <option value="ja">Ja</option>
+              <option value="nee">Nee</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="minorBlock" class="card warn hidden" style="margin-top:12px">
+          <h3>Ouder of verzorger</h3>
+          <div class="grid2">
+            <div>
+              <label for="ouderNaam">Naam ouder/verzorger *</label>
+              <input id="ouderNaam" />
+            </div>
+            <div>
+              <label for="ouderEmail">E-mail ouder/verzorger *</label>
+              <input id="ouderEmail" type="email" />
+            </div>
+          </div>
+          <p style="margin-top:10px"><label><input id="ouderBevoegd" type="checkbox" style="width:auto;margin-right:8px" /> Ik verklaar dat ik bevoegd ben deze keuze te maken.</label></p>
+        </div>
+
+        <div class="card info" style="margin-top:12px">
+          <p><strong>Maak per onderdeel een keuze.</strong> U kunt overal ja kiezen, overal nee kiezen, of per onderdeel verschillen.</p>
+        </div>
+
+        <div id="doelenWrap"></div>
+
+        <div class="card">
+          <label><input id="akkoord" type="checkbox" style="width:auto;margin-right:8px" /> Ik heb de uitleg gelezen en maak vrijwillig mijn keuze.</label>
+        </div>
+
+        <div class="btnrow">
+          <button type="submit" class="btn primary">Verzenden</button>
+          <button type="reset" class="btn light" id="formReset">Wissen</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="view-aanpassen" class="view">
+    <div class="card">
+      <h2>Toestemming aanpassen of intrekken</h2>
+      <p>Zoek uw laatste actieve registratie op met uw e-mailadres.</p>
+      <div class="grid2">
+        <div>
+          <label for="zoekEmail">E-mailadres</label>
+          <input id="zoekEmail" type="email" placeholder="naam@voorbeeld.nl" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn primary" id="zoekRegBtn" type="button">Opzoeken</button>
+        </div>
+      </div>
+      <div id="zoekMsg" class="notice hidden"></div>
+    </div>
+    <div id="editCard" class="card hidden">
+      <h3 id="editTitle"></h3>
+      <p id="editMeta" class="small"></p>
+      <div id="editChoices"></div>
+      <div class="btnrow">
+        <button class="btn primary" id="saveEditBtn" type="button">Opslaan</button>
+        <button class="btn danger" id="withdrawAllBtn" type="button">Alles intrekken</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-privacy" class="view">
+    <div class="card">
+      <h2>Privacyverklaring</h2>
+      <div class="kv">
+        <div>Club</div><div id="privClub"></div>
+        <div>Contact</div><div id="privMail"></div>
+        <div>Bewaartermijn</div><div id="privBewaar"></div>
+        <div>Website</div><div><a id="privSite" target="_blank" rel="noopener">open website</a></div>
+        <div>Instagram</div><div><a id="privInstagram" target="_blank" rel="noopener">open Instagram</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-beheer" class="view">
+    <div id="adminStateMsg" class="notice wrn">
+      Beheer is afgeschermd. Log eerst in.
+    </div>
+
+    <div id="loginCard" class="card" style="max-width:460px">
+      <h2>Beheer inloggen</h2>
+      <div id="loginMsg" class="notice hidden"></div>
+      <label for="adminPassword">Wachtwoord</label>
+      <input id="adminPassword" type="password" placeholder="Wachtwoord" />
+      <div class="btnrow" style="margin-top:12px">
+        <button class="btn primary" id="loginBtn" type="button">Inloggen</button>
+        <button class="btn light" id="forgotBtn" type="button">Wachtwoord vergeten?</button>
+      </div>
+      <p class="small" style="margin-top:12px">In testmodus werkt reset met de ingestelde herstelcode. In echte modus ontvangt de beheerder een resetcode per e-mail.</p>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+      <div class="card green">
+        <h2>Beheeromgeving</h2>
+        <div class="toolbar">
+          <input id="searchAdmin" class="grow" placeholder="Zoek op naam, e-mail of ID" />
+          <select id="filterType">
+            <option value="">Alle types</option>
+            <option>Gast</option>
+            <option>Lid</option>
+            <option>Vrijwilliger</option>
+            <option>Bezoeker</option>
+          </select>
+          <select id="filterStatus">
+            <option value="">Alle statussen</option>
+            <option value="actief">Actief</option>
+            <option value="aangepast">Aangepast</option>
+            <option value="ingetrokken">Ingetrokken</option>
+          </select>
+          <button class="btn light" id="refreshBtn" type="button">Vernieuwen</button>
+          <button class="btn gold" id="exportXlsBtn" type="button">Excel export</button>
+          <button class="btn light" id="exportCsvBtn" type="button">CSV export</button>
+          <button class="btn danger" id="logoutBtn" type="button">Uitloggen</button>
+        </div>
+        <div id="adminMsg" class="notice hidden"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Naam</th>
+                <th>E-mail</th>
+                <th>Type</th>
+                <th>Datum</th>
+                <th>Website</th>
+                <th>Instagram</th>
+                <th>Drukwerk</th>
+                <th>Intern</th>
+                <th>Promo</th>
+                <th>Status</th>
+                <th>Actie</th>
+              </tr>
+            </thead>
+            <tbody id="adminTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h3>Wachtwoord wijzigen</h3>
+          <div id="changePwMsg" class="notice hidden"></div>
+          <label for="currentPw">Huidig wachtwoord</label>
+          <input id="currentPw" type="password" />
+          <label for="newPw" style="margin-top:10px">Nieuw wachtwoord</label>
+          <input id="newPw" type="password" />
+          <label for="newPw2" style="margin-top:10px">Nieuw wachtwoord herhalen</label>
+          <input id="newPw2" type="password" />
+          <div class="btnrow" style="margin-top:12px">
+            <button class="btn primary" id="changePwBtn" type="button">Wachtwoord opslaan</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Geselecteerde registratie</h3>
+          <div id="detailEmpty" class="small">Kies in de tabel een regel om details en historie te zien.</div>
+          <div id="detailBox" class="hidden">
+            <div class="kv" id="detailKv"></div>
+            <h4 style="margin-top:16px">Historie</h4>
+            <div id="detailAudit" class="audit"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="forgotModal" class="modal-bg">
+  <div class="modal">
+    <h3>Wachtwoord vergeten</h3>
+    <div id="forgotMsg" class="notice hidden"></div>
+    <label for="forgotEmail">Beheer e-mailadres</label>
+    <input id="forgotEmail" type="email" />
+    <div id="forgotCodeBlock" class="hidden">
+      <label for="forgotCode" style="margin-top:10px">Resetcode</label>
+      <input id="forgotCode" />
+      <label for="forgotNewPassword" style="margin-top:10px">Nieuw wachtwoord</label>
+      <input id="forgotNewPassword" type="password" />
+    </div>
+    <div class="btnrow" style="margin-top:14px">
+      <button class="btn primary" id="forgotSendBtn" type="button">Resetcode aanvragen</button>
+      <button class="btn gold hidden" id="forgotConfirmBtn" type="button">Nieuw wachtwoord opslaan</button>
+      <button class="btn light" id="forgotCloseBtn" type="button">Sluiten</button>
+    </div>
+  </div>
+</div>
+
+<div id="successModal" class="modal-bg">
+  <div class="modal">
+    <h3>Keuze opgeslagen</h3>
+    <p id="successText">Uw keuze is opgeslagen.</p>
+    <div class="btnrow"><button class="btn primary" id="successCloseBtn" type="button">Sluiten</button></div>
+  </div>
+</div>
+
+<footer>
+  <span id="footClub"></span> · <a id="footSite" target="_blank" rel="noopener">website</a> · <span id="footMail"></span>
+</footer>
+
+<script>
+const FALLBACK_LOGO = "data:image/jpeg;base64,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";
+
+const DOELEN = [
+  { id: "website", label: "Gebruik op de website" },
+  { id: "instagram", label: "Gebruik op Instagram" },
+  { id: "drukwerk", label: "Gebruik in drukwerk of flyers" },
+  { id: "intern", label: "Gebruik in interne clubcommunicatie" },
+  { id: "promo", label: "Gebruik in promotievideo" }
+];
+
+const KEY_RECORDS = "gcd_records_v3";
+const KEY_ADMINPW = "gcd_admin_password_v3";
+const KEY_AUDIT = "gcd_audit_v3";
+const KEY_SESSION = "gcd_admin_session_v3";
+const KEY_FORGOT = "gcd_forgot_code_v3";
+const KEY_TOKEN = "gcd_admin_token_v3";
+
+let currentEditRecord = null;
+let selectedRecordId = null;
+let adminToken = "";
+
+function qs(s, p=document){ return p.querySelector(s); }
+function qsa(s, p=document){ return [...p.querySelectorAll(s)]; }
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function nowISO(){ return new Date().toISOString(); }
+function uid(){ return "REG-" + Date.now() + "-" + Math.random().toString(36).slice(2,6).toUpperCase(); }
+function deepCopy(v){ return JSON.parse(JSON.stringify(v)); }
+
+function getMode(){ return CFG.opslag.modus === "api" && CFG.opslag.apiUrl ? "api" : "local"; }
+function getLogo(){ return CFG.logoUrl || FALLBACK_LOGO; }
+
+function setNotice(id, type, text){
+  const el = typeof id === "string" ? document.getElementById(id) : id;
+  if (!el) return;
+  el.className = "notice " + type;
+  el.textContent = text;
+  el.classList.remove("hidden");
+}
+function clearNotice(id){
+  const el = typeof id === "string" ? document.getElementById(id) : id;
+  if (!el) return;
+  el.className = "notice hidden";
+  el.textContent = "";
+}
+
+function saveLS(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function loadLS(key, fallback){ try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); } catch { return fallback; } }
+
+function getLocalRecords(){ return loadLS(KEY_RECORDS, []); }
+function setLocalRecords(arr){ saveLS(KEY_RECORDS, arr); }
+function getAuditLog(){ return loadLS(KEY_AUDIT, []); }
+function setAuditLog(arr){ saveLS(KEY_AUDIT, arr); }
+function addAudit(action, detail){
+  const arr = getAuditLog();
+  arr.unshift({ at: nowISO(), action, detail });
+  setAuditLog(arr.slice(0,200));
+}
+function getAdminPassword(){ return localStorage.getItem(KEY_ADMINPW) || CFG.admin.initialPassword; }
+function setAdminPassword(pw){ localStorage.setItem(KEY_ADMINPW, pw); }
+function setSession(v){ sessionStorage.setItem(KEY_SESSION, v ? "1" : "0"); }
+function hasSession(){ return sessionStorage.getItem(KEY_SESSION) === "1"; }
+function setToken(v){ sessionStorage.setItem(KEY_TOKEN, v || ""); }
+function getToken(){ return sessionStorage.getItem(KEY_TOKEN) || ""; }
+
+async function apiCall(action, payload={}){
+  if (getMode() !== "api") throw new Error("API niet ingesteld");
+  const body = new URLSearchParams();
+  body.set("data", JSON.stringify({ action, payload, token: adminToken }));
+  const res = await fetch(CFG.opslag.apiUrl, { method: "POST", body });
+  const txt = await res.text();
+  let json;
+  try { json = JSON.parse(txt); } catch { throw new Error("Ongeldige API-respons"); }
+  if (!json.ok) throw new Error(json.message || "Onbekende API-fout");
+  return json;
+}
+
+function buildChoiceBlocks(container, prefix, data={}){
+  container.innerHTML = DOELEN.map(d => `
+    <div class="choice">
+      <h3>${esc(d.label)}</h3>
+      <div class="choice-row">
+        <div class="choice-item">
+          <input type="radio" name="${prefix}-${d.id}" id="${prefix}-${d.id}-ja" value="ja" ${data[d.id]==='ja'?'checked':''}>
+          <label for="${prefix}-${d.id}-ja">Ja, akkoord</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="${prefix}-${d.id}" id="${prefix}-${d.id}-nee" value="nee" ${data[d.id]==='nee'?'checked':''}>
+          <label for="${prefix}-${d.id}-nee">Niet akkoord</label>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+function collectChoices(prefix){
+  const out = {};
+  for (const d of DOELEN){
+    const sel = qs(`input[name="${prefix}-${d.id}"]:checked`);
+    if (!sel) return null;
+    out[d.id] = sel.value;
+  }
+  return out;
+}
+
+function initUI(){
+  document.documentElement.style.setProperty("--groen", CFG.kleur.groen);
+  document.documentElement.style.setProperty("--groen2", CFG.kleur.groen2);
+  document.documentElement.style.setProperty("--goud", CFG.kleur.goud);
+  document.documentElement.style.setProperty("--licht", CFG.kleur.licht);
+  document.documentElement.style.setProperty("--tekst", CFG.kleur.tekst);
+  document.documentElement.style.setProperty("--subtiel", CFG.kleur.subtiel);
+  document.documentElement.style.setProperty("--gevaar", CFG.kleur.gevaar);
+  document.documentElement.style.setProperty("--succes", CFG.kleur.succes);
+  document.documentElement.style.setProperty("--info", CFG.kleur.info);
+
+  ["logoTop","logoHero"].forEach(id => document.getElementById(id).src = getLogo());
+  ["clubName","clubName2","footClub","privClub"].forEach(id => document.getElementById(id).textContent = CFG.club);
+  qs("#footSite").href = CFG.siteUrl;
+  qs("#footSite").textContent = CFG.siteUrl.replace(/^https?:\/\//,"");
+  qs("#footMail").textContent = CFG.privacyEmail;
+  qs("#privMail").textContent = CFG.privacyEmail;
+  qs("#privBewaar").textContent = CFG.bewaartermijn;
+  qs("#privSite").href = CFG.siteUrl;
+  qs("#privInstagram").href = CFG.instagramUrl;
+
+  qs("#datum").value = todayISO();
+  buildChoiceBlocks(qs("#doelenWrap"), "form", {});
+
+  const mode = getMode();
+  const pill = qs("#modePill");
+  pill.className = "mode-pill " + mode;
+  pill.textContent = mode === "api" ? "Echte werkmodus" : "Lokale testmodus";
+  qs("#modeText").textContent = mode === "api"
+    ? "Mails, live registraties en wachtwoordreset lopen via de ingestelde backend."
+    : "Deze versie werkt lokaal in de browser. Voor echte mail, echte reset en live synchronisatie naar een beheeroverzicht moet u de backend koppelen.";
+}
+
+function switchView(name){
+  qsa(".view").forEach(v => v.classList.remove("active"));
+  qsa(".nav button").forEach(b => b.classList.remove("active"));
+  qs(`#view-${name}`).classList.add("active");
+  const btn = qs(`.nav button[data-view="${name}"]`);
+  if (btn) btn.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function bindNavigation(){
+  qsa(".nav button").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.view)));
+  qsa("[data-go]").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.go)));
+}
+
+function bindMinorToggle(){
+  qs("#is16").addEventListener("change", () => {
+    const minor = qs("#is16").value === "nee";
+    qs("#minorBlock").classList.toggle("hidden", !minor);
+    qs("#ouderNaam").required = minor;
+    qs("#ouderEmail").required = minor;
+  });
+}
+
+async function submitConsent(e){
+  e.preventDefault();
+  clearNotice("formMsg");
+  const form = qs("#consentForm");
+  if (!form.reportValidity()) return;
+
+  if (qs("#is16").value === "nee"){
+    if (!qs("#ouderBevoegd").checked){
+      setNotice("formMsg", "err", "Vink aan dat de ouder of verzorger bevoegd is deze keuze te maken.");
+      return;
+    }
+  }
+  const choices = collectChoices("form");
+  if (!choices){
+    setNotice("formMsg", "err", "Maak voor elk onderdeel een keuze.");
+    return;
+  }
+  if (!qs("#akkoord").checked){
+    setNotice("formMsg", "err", "Vink de verklaring aan.");
+    return;
+  }
+
+  const record = {
+    id: uid(),
+    versie: CFG.verklaringVersie,
+    voornaam: qs("#voornaam").value.trim(),
+    achternaam: qs("#achternaam").value.trim(),
+    fullName: qs("#voornaam").value.trim() + " " + qs("#achternaam").value.trim(),
+    email: qs("#email").value.trim().toLowerCase(),
+    type: qs("#typeBetrokkene").value,
+    datum: qs("#datum").value,
+    leeftijd16: qs("#is16").value,
+    ouderNaam: qs("#is16").value === "nee" ? qs("#ouderNaam").value.trim() : "",
+    ouderEmail: qs("#is16").value === "nee" ? qs("#ouderEmail").value.trim().toLowerCase() : "",
+    keuzes: choices,
+    status: "actief",
+    tijdstip: nowISO(),
+    history: [{ at: nowISO(), action: "aangemaakt", by: "gebruiker" }]
+  };
+
+  try {
+    if (getMode() === "api"){
+      await apiCall("submitConsent", { record });
+      addAudit("nieuwe registratie", record.id + " via api");
+      qs("#successText").textContent = "Uw keuze is opgeslagen. Er is een bevestigingsmail verstuurd naar het ingevulde e-mailadres.";
+    } else {
+      const recs = getLocalRecords();
+      recs.push(record);
+      setLocalRecords(recs);
+      addAudit("nieuwe registratie", record.id + " lokaal opgeslagen");
+      qs("#successText").textContent = "Uw keuze is opgeslagen in deze browser. Let op: in testmodus wordt geen echte bevestigingsmail verzonden.";
+    }
+    form.reset();
+    qs("#datum").value = todayISO();
+    qs("#minorBlock").classList.add("hidden");
+    clearNotice("formMsg");
+    qs("#successModal").classList.add("show");
+    if (hasSession()) loadAdminRecords();
+  } catch (err){
+    setNotice("formMsg", "err", "Opslaan mislukt: " + err.message);
+  }
+}
+
+async function findLatestRecordByEmail(email){
+  if (getMode() === "api"){
+    const res = await apiCall("findByEmail", { email });
+    return res.record || null;
+  }
+  return [...getLocalRecords()].reverse().find(r => r.email === email && r.status !== "ingetrokken") || null;
+}
+
+async function updateRecord(updated){
+  if (getMode() === "api"){
+    await apiCall("updateConsent", { record: updated });
+  } else {
+    const recs = getLocalRecords();
+    const idx = recs.findIndex(r => r.id === updated.id);
+    if (idx < 0) throw new Error("Registratie niet gevonden");
+    recs[idx] = updated;
+    setLocalRecords(recs);
+  }
+}
+
+async function lookupRecord(){
+  clearNotice("zoekMsg");
+  const email = qs("#zoekEmail").value.trim().toLowerCase();
+  if (!email){ setNotice("zoekMsg", "err", "Vul een e-mailadres in."); return; }
+  try {
+    const rec = await findLatestRecordByEmail(email);
+    if (!rec){
+      currentEditRecord = null;
+      qs("#editCard").classList.add("hidden");
+      setNotice("zoekMsg", "err", "Geen actieve registratie gevonden.");
+      return;
+    }
+    currentEditRecord = deepCopy(rec);
+    qs("#editTitle").textContent = rec.fullName;
+    qs("#editMeta").textContent = `ID: ${rec.id} · Datum: ${rec.datum} · Status: ${rec.status}`;
+    buildChoiceBlocks(qs("#editChoices"), "edit", rec.keuzes || {});
+    qs("#editCard").classList.remove("hidden");
+    setNotice("zoekMsg", "ok", "Registratie gevonden. Pas de keuzes aan en sla op.");
+  } catch (err){
+    setNotice("zoekMsg", "err", err.message);
+  }
+}
+
+async function saveEditedRecord(withdrawAll=false){
+  if (!currentEditRecord) return;
+  const choices = withdrawAll ? Object.fromEntries(DOELEN.map(d => [d.id, "nee"])) : collectChoices("edit");
+  if (!choices){ setNotice("zoekMsg", "err", "Maak voor elk onderdeel een keuze."); return; }
+  currentEditRecord.keuzes = choices;
+  currentEditRecord.status = withdrawAll ? "ingetrokken" : "aangepast";
+  currentEditRecord.history = currentEditRecord.history || [];
+  currentEditRecord.history.push({ at: nowISO(), action: withdrawAll ? "ingetrokken" : "aangepast", by: "gebruiker" });
+  try {
+    await updateRecord(currentEditRecord);
+    addAudit(withdrawAll ? "intrekking" : "wijziging", currentEditRecord.id);
+    setNotice("zoekMsg", "ok", withdrawAll ? "Alles is ingetrokken." : "Wijziging is opgeslagen.");
+    qs("#editCard").classList.add("hidden");
+    currentEditRecord = null;
+    if (hasSession()) loadAdminRecords();
+  } catch (err){
+    setNotice("zoekMsg", "err", err.message);
+  }
+}
+
+async function adminLogin(){
+  clearNotice("loginMsg");
+  const pw = qs("#adminPassword").value;
+  if (!pw){ setNotice("loginMsg", "err", "Vul een wachtwoord in."); return; }
+  try {
+    if (getMode() === "api"){
+      const res = await apiCall("authAdmin", { password: pw });
+      adminToken = res.token || "";
+      setToken(adminToken);
+      setSession(true);
+    } else {
+      if (pw !== getAdminPassword()) throw new Error("Onjuist wachtwoord.");
+      setSession(true);
+    }
+    qs("#loginCard").classList.add("hidden");
+    qs("#adminPanel").classList.remove("hidden");
+    qs("#adminStateMsg").classList.add("hidden");
+    addAudit("beheer login", "ingelogd");
+    await loadAdminRecords();
+  } catch (err){
+    setNotice("loginMsg", "err", err.message || "Inloggen mislukt.");
+  }
+}
+
+function adminLogout(){
+  adminToken = "";
+  setToken("");
+  setSession(false);
+  qs("#loginCard").classList.remove("hidden");
+  qs("#adminPanel").classList.add("hidden");
+  qs("#adminStateMsg").classList.remove("hidden");
+  qs("#adminPassword").value = "";
+}
+
+let cachedAdminRecords = [];
+async function loadAdminRecords(){
+  try {
+    cachedAdminRecords = getMode() === "api"
+      ? (await apiCall("listRecords", {})).records || []
+      : getLocalRecords();
+    renderAdminTable();
+  } catch (err){
+    setNotice("adminMsg", "err", "Laden mislukt: " + err.message);
+  }
+}
+
+function renderAdminTable(){
+  const q = qs("#searchAdmin").value.trim().toLowerCase();
+  const ft = qs("#filterType").value;
+  const fs = qs("#filterStatus").value;
+  const rows = cachedAdminRecords.filter(r => {
+    const hay = `${r.id} ${r.fullName} ${r.email}`.toLowerCase();
+    if (q && !hay.includes(q)) return false;
+    if (ft && r.type !== ft) return false;
+    if (fs && r.status !== fs) return false;
+    return true;
+  });
+  qs("#adminTbody").innerHTML = rows.map(r => `
+    <tr>
+      <td>${esc(r.id)}</td>
+      <td><strong>${esc(r.fullName)}</strong></td>
+      <td>${esc(r.email)}</td>
+      <td>${esc(r.type)}</td>
+      <td>${esc(r.datum)}</td>
+      ${DOELEN.map(d => `<td><span class="badge ${esc(r.keuzes?.[d.id] || '')}">${esc(r.keuzes?.[d.id] || '-')}</span></td>`).join('')}
+      <td><span class="badge ${esc(r.status)}">${esc(r.status)}</span></td>
+      <td><button class="btn light" type="button" data-detail="${esc(r.id)}">Details</button></td>
+    </tr>
+  `).join("");
+  qsa("[data-detail]").forEach(btn => btn.addEventListener("click", () => showRecordDetail(btn.dataset.detail)));
+  if (!rows.length) setNotice("adminMsg", "wrn", "Geen registraties gevonden voor dit filter."); else clearNotice("adminMsg");
+  if (selectedRecordId) showRecordDetail(selectedRecordId);
+}
+
+function showRecordDetail(id){
+  const rec = cachedAdminRecords.find(r => r.id === id);
+  if (!rec) return;
+  selectedRecordId = id;
+  qs("#detailEmpty").classList.add("hidden");
+  qs("#detailBox").classList.remove("hidden");
+  qs("#detailKv").innerHTML = `
+    <div>ID</div><div>${esc(rec.id)}</div>
+    <div>Naam</div><div>${esc(rec.fullName)}</div>
+    <div>E-mail</div><div>${esc(rec.email)}</div>
+    <div>Type</div><div>${esc(rec.type)}</div>
+    <div>Datum</div><div>${esc(rec.datum)}</div>
+    <div>Status</div><div>${esc(rec.status)}</div>
+    <div>16+</div><div>${esc(rec.leeftijd16)}</div>
+    <div>Ouder/verzorger</div><div>${esc(rec.ouderNaam || '-')}</div>
+    <div>Ouder e-mail</div><div>${esc(rec.ouderEmail || '-')}</div>
+  `;
+  const hist = rec.history || [];
+  qs("#detailAudit").innerHTML = hist.length ? hist.slice().reverse().map(h => `
+    <div class="audit-item">
+      <strong>${esc(h.action || 'wijziging')}</strong><br>
+      <span class="small">${esc(h.at || '')} · ${esc(h.by || '')}</span>
+    </div>
+  `).join("") : `<div class="audit-item">Geen historie beschikbaar.</div>`;
+}
+
+function exportCsv(){
+  if (!cachedAdminRecords.length) { setNotice("adminMsg", "wrn", "Geen data om te exporteren."); return; }
+  const header = ["ID","Naam","E-mail","Type","Datum","16+","Ouder naam","Ouder e-mail",...DOELEN.map(d=>d.label),"Status","Tijdstip"];
+  const lines = cachedAdminRecords.map(r => [
+    r.id, r.fullName, r.email, r.type, r.datum, r.leeftijd16, r.ouderNaam || "", r.ouderEmail || "",
+    ...DOELEN.map(d => r.keuzes?.[d.id] || ""), r.status, r.tijdstip || ""
+  ].map(v => `"${String(v ?? "").replace(/"/g,'""')}"`).join(";"));
+  downloadBlob("registraties_" + todayISO() + ".csv", "\uFEFF" + [header.join(";"), ...lines].join("\n"), "text/csv;charset=utf-8");
+}
+function exportXls(){
+  if (!cachedAdminRecords.length) { setNotice("adminMsg", "wrn", "Geen data om te exporteren."); return; }
+  const html = `
+    <table border="1">
+      <tr>${["ID","Naam","E-mail","Type","Datum","16+","Ouder naam","Ouder e-mail",...DOELEN.map(d=>d.label),"Status","Tijdstip"].map(h=>`<th>${esc(h)}</th>`).join('')}</tr>
+      ${cachedAdminRecords.map(r => `
+        <tr>
+          <td>${esc(r.id)}</td>
+          <td>${esc(r.fullName)}</td>
+          <td>${esc(r.email)}</td>
+          <td>${esc(r.type)}</td>
+          <td>${esc(r.datum)}</td>
+          <td>${esc(r.leeftijd16)}</td>
+          <td>${esc(r.ouderNaam || '')}</td>
+          <td>${esc(r.ouderEmail || '')}</td>
+          ${DOELEN.map(d => `<td>${esc(r.keuzes?.[d.id] || '')}</td>`).join('')}
+          <td>${esc(r.status)}</td>
+          <td>${esc(r.tijdstip || '')}</td>
+        </tr>
+      `).join('')}
+    </table>`;
+  downloadBlob("registraties_" + todayISO() + ".xls", html, "application/vnd.ms-excel;charset=utf-8");
+}
+function downloadBlob(filename, content, type){
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function changePassword(){
+  clearNotice("changePwMsg");
+  const cur = qs("#currentPw").value;
+  const npw = qs("#newPw").value;
+  const npw2 = qs("#newPw2").value;
+  if (!cur || !npw || !npw2){ setNotice("changePwMsg", "err", "Vul alle velden in."); return; }
+  if (npw !== npw2){ setNotice("changePwMsg", "err", "De nieuwe wachtwoorden zijn niet gelijk."); return; }
+  if (npw.length < 8){ setNotice("changePwMsg", "err", "Gebruik minimaal 8 tekens."); return; }
+  try {
+    if (getMode() === "api"){
+      await apiCall("changePassword", { currentPassword: cur, newPassword: npw });
+    } else {
+      if (cur !== getAdminPassword()) throw new Error("Huidig wachtwoord klopt niet.");
+      setAdminPassword(npw);
+      addAudit("wachtwoord gewijzigd", "lokaal gewijzigd");
+    }
+    qs("#currentPw").value = "";
+    qs("#newPw").value = "";
+    qs("#newPw2").value = "";
+    setNotice("changePwMsg", "ok", "Wachtwoord aangepast. De beheerdermelding is vastgelegd." + (getMode()==='api' ? " Er is ook een mailmelding verstuurd." : ""));
+  } catch (err){
+    setNotice("changePwMsg", "err", err.message);
+  }
+}
+
+function openForgot(){
+  clearNotice("forgotMsg");
+  qs("#forgotEmail").value = CFG.admin.email;
+  qs("#forgotCode").value = "";
+  qs("#forgotNewPassword").value = "";
+  qs("#forgotCodeBlock").classList.add("hidden");
+  qs("#forgotConfirmBtn").classList.add("hidden");
+  qs("#forgotModal").classList.add("show");
+}
+
+async function requestForgotCode(){
+  clearNotice("forgotMsg");
+  const email = qs("#forgotEmail").value.trim().toLowerCase();
+  if (!email){ setNotice("forgotMsg", "err", "Vul het beheer e-mailadres in."); return; }
+  try {
+    if (getMode() === "api"){
+      await apiCall("requestPasswordReset", { email });
+      setNotice("forgotMsg", "ok", "Resetcode verstuurd naar het beheer e-mailadres.");
+    } else {
+      if (email !== CFG.admin.email.toLowerCase()) throw new Error("Dit is niet het ingestelde beheer e-mailadres.");
+      localStorage.setItem(KEY_FORGOT, CFG.admin.resetCode);
+      addAudit("resetcode aangevraagd", "lokale herstelcode gebruikt");
+      setNotice("forgotMsg", "ok", "Testmodus: gebruik de ingestelde herstelcode uit het instellingenblok.");
+    }
+    qs("#forgotCodeBlock").classList.remove("hidden");
+    qs("#forgotConfirmBtn").classList.remove("hidden");
+  } catch (err){
+    setNotice("forgotMsg", "err", err.message);
+  }
+}
+
+async function confirmForgot(){
+  const email = qs("#forgotEmail").value.trim().toLowerCase();
+  const code = qs("#forgotCode").value.trim();
+  const newPassword = qs("#forgotNewPassword").value;
+  if (!code || !newPassword){ setNotice("forgotMsg", "err", "Vul resetcode en nieuw wachtwoord in."); return; }
+  if (newPassword.length < 8){ setNotice("forgotMsg", "err", "Gebruik minimaal 8 tekens."); return; }
+  try {
+    if (getMode() === "api"){
+      await apiCall("confirmPasswordReset", { email, code, newPassword });
+    } else {
+      if (email !== CFG.admin.email.toLowerCase()) throw new Error("Onjuist beheer e-mailadres.");
+      if (code !== (localStorage.getItem(KEY_FORGOT) || CFG.admin.resetCode)) throw new Error("Resetcode onjuist.");
+      setAdminPassword(newPassword);
+      addAudit("wachtwoord hersteld", "lokaal herstel uitgevoerd");
+    }
+    setNotice("forgotMsg", "ok", "Wachtwoord gewijzigd. De beheerdermelding is vastgelegd." + (getMode()==='api' ? " Er is een bevestigingsmail verstuurd." : ""));
+  } catch (err){
+    setNotice("forgotMsg", "err", err.message);
+  }
+}
+
+function attachEvents(){
+  bindNavigation();
+  bindMinorToggle();
+  qs("#consentForm").addEventListener("submit", submitConsent);
+  qs("#formReset").addEventListener("click", () => { clearNotice("formMsg"); qs("#minorBlock").classList.add("hidden"); qs("#datum").value = todayISO(); });
+  qs("#zoekRegBtn").addEventListener("click", lookupRecord);
+  qs("#saveEditBtn").addEventListener("click", () => saveEditedRecord(false));
+  qs("#withdrawAllBtn").addEventListener("click", () => saveEditedRecord(true));
+  qs("#loginBtn").addEventListener("click", adminLogin);
+  qs("#logoutBtn").addEventListener("click", adminLogout);
+  qs("#refreshBtn").addEventListener("click", loadAdminRecords);
+  qs("#exportCsvBtn").addEventListener("click", exportCsv);
+  qs("#exportXlsBtn").addEventListener("click", exportXls);
+  qs("#changePwBtn").addEventListener("click", changePassword);
+  qs("#forgotBtn").addEventListener("click", openForgot);
+  qs("#forgotSendBtn").addEventListener("click", requestForgotCode);
+  qs("#forgotConfirmBtn").addEventListener("click", confirmForgot);
+  qs("#forgotCloseBtn").addEventListener("click", () => qs("#forgotModal").classList.remove("show"));
+  qs("#successCloseBtn").addEventListener("click", () => qs("#successModal").classList.remove("show"));
+  ["searchAdmin","filterType","filterStatus"].forEach(id => qs("#"+id).addEventListener(id === "searchAdmin" ? "input" : "change", renderAdminTable));
+}
+
+function restoreAdminState(){
+  if (!hasSession()) return;
+  adminToken = getToken();
+  qs("#loginCard").classList.add("hidden");
+  qs("#adminPanel").classList.remove("hidden");
+  qs("#adminStateMsg").classList.add("hidden");
+  loadAdminRecords();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initUI();
+  attachEvents();
+  restoreAdminState();
+});
+</script>
+</body>
+</html>
